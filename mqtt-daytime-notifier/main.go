@@ -20,7 +20,10 @@ func main() {
 		log.Fatal("Environment variables MQTT_BROKER, MQTT_TOPIC, MQTT_USERNAME, and MQTT_PASSWORD must be set.")
 	}
 
-	time.LoadLocation(tz)
+	locat, error := time.LoadLocation(tz)
+	if error != nil {
+		panic(error)
+	}
 
 	opts := mqtt.NewClientOptions().AddBroker(broker)
 	opts.SetUsername(username)
@@ -32,18 +35,18 @@ func main() {
 	}
 
 	for {
-		daytime := getDaytime()
+		daytime := getDaytime(locat)
 
 		token := client.Publish(topic, 0, false, daytime)
 		token.Wait()
 
-		fmt.Printf("Published message: %s\n", daytime)
+		fmt.Printf("Published message: %s @ %s\n", daytime, time.Now().In(locat).Format("15:04:05"))
 		time.Sleep(1 * time.Hour)
 	}
 }
 
-func getDaytime() string {
-	now := time.Now()
+func getDaytime(locat *time.Location) string {
+	now := time.Now().In(locat)
 	hour := now.Hour()
 
 	switch {
