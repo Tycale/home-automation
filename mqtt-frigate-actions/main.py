@@ -4,7 +4,7 @@ import os
 import paho.mqtt.client as mqtt
 import threading
 
-PORT = int(get_env_var('MQTT_PORT', '1883'))
+PORT = int(get_env_var('MQTT_PORT', default='1883'))
 BROKER = get_env_var('MQTT_IP')
 CLIENT_ID = get_env_var('MQTT_CLIENT')
 USERNAME = get_env_var('MQTT_USER')
