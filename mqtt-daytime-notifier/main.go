@@ -15,6 +15,10 @@ func main() {
 	username := os.Getenv("MQTT_USERNAME")
 	password := os.Getenv("MQTT_PASSWORD")
 
+	if broker == "" || topic == "" || username == "" || password == "" {
+		log.Fatal("Environment variables MQTT_BROKER, MQTT_TOPIC, MQTT_USERNAME, and MQTT_PASSWORD must be set.")
+	}
+
 	opts := mqtt.NewClientOptions().AddBroker(broker)
 	opts.SetUsername(username)
 	opts.SetPassword(password)
