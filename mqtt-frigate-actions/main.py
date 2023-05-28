@@ -30,6 +30,7 @@ PODO_TOPIC2 = "cmnd/esp-terrasse/POWER4"
 # Global variables
 common_topics = [HUGO_TOPIC1, HUGO_TOPIC2, PODO_TOPIC1, PODO_TOPIC2]
 score_threshold = 0.76
+counted_events = set()
 event_counter = {}
 off_timers = {}
 is_night = False
@@ -70,25 +71,34 @@ def handle_camera_event(client, data, *camera_topics):
         return
 
     topics = list(camera_topics) + common_topics
-    if (data["type"] == "new" or data["type"] == "update") and float(data["before"]["top_score"]) > score_threshold or float(data["after"]["score"]) > score_threshold:
+
+    if data["type"] in {"new", "update"} and data["id"] not in counted_events and \
+            (float(data["before"]["top_score"]) > score_threshold or float(data["after"]["score"]) > score_threshold):
         # Increase the counter for each topic
         for topic in topics:
             event_counter[topic] += 1
 
-            # Cancel previous timer if it exists
+        # Cancel previous timer if it exists
+        for topic in topics:
             if off_timers[topic]:
                 off_timers[topic].cancel()
                 off_timers[topic] = None
 
-            # Turn on the light
+        # Turn on the light
+        for topic in topics:
             client.publish(topic, "ON")
             print(f"Turned ON light for topic: {topic}", flush=True)
+
+        # Ajoutez l'événement au ensemble d'événements comptabilisés
+        counted_events.add(data["id"])
+
     elif data["type"] == "end":
         # Decrease the counter for each topic
         for topic in topics:
             event_counter[topic] -= 1
 
-            # Set timer to turn off light after 2 minutes if no events are active
+        # Set timer to turn off light after 2 minutes if no events are active
+        for topic in topics:
             if event_counter[topic] == 0 and not off_timers[topic]:
                 off_timers[topic] = threading.Timer(120, turn_off_light, args=(client, topic))
                 off_timers[topic].start()
