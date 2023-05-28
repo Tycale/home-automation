@@ -6,3 +6,4 @@ Environment variables to set:
  * `MQTT_TOPIC`
  * `MQTT_USERNAME`
  * `MQTT_PASSWORD`
+ * `TZ`
