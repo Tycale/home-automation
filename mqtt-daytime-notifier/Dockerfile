@@ -9,4 +9,4 @@ RUN go build -o mqtt-daytime-notifier .
 FROM alpine:latest
 WORKDIR /root/
 COPY --from=builder /app/mqtt-daytime-notifier .
-CMD ["./mqtt_publisher"]
+CMD ["/app/mqtt-daytime-notifier"]
