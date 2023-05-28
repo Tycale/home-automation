@@ -40,13 +40,13 @@ for topic in common_topics + [GARAGE_LEDS_TOPIC, ABRIS_LEDS_TOPIC1, ABRIS_LEDS_T
     off_timers[topic] = None
 
 def on_connect(client, userdata, flags, rc):
-    print(f"Connected with result code {rc}")
+    print(f"Connected with result code {rc}", flush=True)
     client.subscribe(FRIGATE_EVENTS_TOPIC)
     client.subscribe(DAYTIME_TOPIC)
 
 def on_message(client, userdata, msg):
     global is_night
-    print(f"Received message: {msg.topic} {str(msg.payload)}")
+    print(f"Received message: {msg.topic} {str(msg.payload)}", flush=True)
 
     if msg.topic == DAYTIME_TOPIC:
         is_night = str(msg.payload) == "night"
@@ -81,7 +81,7 @@ def handle_camera_event(client, data, *camera_topics):
 
             # Turn on the light
             client.publish(topic, "ON")
-            print(f"Turned ON light for topic: {topic}")
+            print(f"Turned ON light for topic: {topic}", flush=True)
     elif data["type"] == "end":
         # Decrease the counter for each topic
         for topic in topics:
@@ -94,11 +94,11 @@ def handle_camera_event(client, data, *camera_topics):
 
 def turn_off_light(client, topic):
     client.publish(topic, "OFF")
-    print(f"Turned OFF light for topic: {topic}")
+    print(f"Turned OFF light for topic: {topic}", flush=True)
 
 def on_disconnect(client, userdata, rc):
     if rc != 0:
-        print(f"Unexpected disconnection with result code {rc}")
+        print(f"Unexpected disconnection with result code {rc}", flush=True)
 
 def main():
     client = mqtt.Client(client_id=CLIENT_ID)
@@ -115,5 +115,5 @@ def main():
     client.loop_forever()
 
 if __name__ == "__main__":
-    print("Running..")
+    print("Running..", flush=True)
     main()
