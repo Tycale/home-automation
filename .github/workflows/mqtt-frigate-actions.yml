@@ -1,0 +1,56 @@
+name: Go Build and Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'mqtt-frigate-actions/**'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_NAME: mqtt-frigate-actions
+      IMAGE_NAME: tycale/mqtt-frigate-actions
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v3
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.PAT }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: ./${{ env.PROJECT_NAME }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:${{ steps.tag_version.outputs.new_tag }}
+            ${{ env.IMAGE_NAME }}:latest
+
+      - name: Upload Release Assets
+        uses: softprops/action-gh-release@v0.1.15
+        with:
+          token: ${{ secrets.PAT }}
+          tag_name: ${{ steps.tag_version.outputs.new_tag }}
+          name: ${{ env.PROJECT_NAME }}
+          body: docker pull ${{ env.IMAGE_NAME }}:${{ steps.tag_version.outputs.new_tag }}
