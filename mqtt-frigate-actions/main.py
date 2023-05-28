@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import json
-import os
+import os, sys
 import paho.mqtt.client as mqtt
 import threading
 
@@ -49,7 +49,8 @@ def on_message(client, userdata, msg):
     print(f"Received message: {msg.topic} {str(msg.payload)}", flush=True)
 
     if msg.topic == DAYTIME_TOPIC:
-        is_night = str(msg.payload) == "night"
+        is_night = str(msg.payload.decode()) == "night"
+        print(f"daytime is night: '{is_night}'", flush=True)
         return
 
     # Convert message to JSON
