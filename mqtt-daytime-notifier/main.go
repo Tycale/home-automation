@@ -37,7 +37,7 @@ func main() {
 	for {
 		daytime := getDaytime(locat)
 
-		token := client.Publish(topic, 0, false, daytime)
+		token := client.Publish(topic, 0, true, daytime)
 		token.Wait()
 
 		fmt.Printf("Published message: %s @ %s\n", daytime, time.Now().In(locat).Format("15:04:05"))
