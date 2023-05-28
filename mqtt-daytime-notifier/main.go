@@ -37,7 +37,7 @@ func main() {
 		token := client.Publish(topic, 0, false, daytime)
 		token.Wait()
 
-		fmt.Printf("Published message: %s\n", daytime)
+		fmt.Printf("Published message: %s @ %s\n", daytime, time.Now().Format("15:04:05"))
 		time.Sleep(1 * time.Hour)
 	}
 }
