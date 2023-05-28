@@ -4,7 +4,13 @@ import os
 import paho.mqtt.client as mqtt
 import threading
 
-PORT = int(get_env_var('MQTT_PORT', '1883'))
+def get_env_var(name, default=None):
+    var = os.getenv(name, default)
+    if var is None:
+        sys.exit(f"Error: {name} is not set")
+    return var
+
+PORT = int(get_env_var('MQTT_PORT', default='1883'))
 BROKER = get_env_var('MQTT_IP')
 CLIENT_ID = get_env_var('MQTT_CLIENT')
 USERNAME = get_env_var('MQTT_USER')
@@ -32,12 +38,6 @@ is_night = False
 for topic in common_topics + [GARAGE_LEDS_TOPIC, ABRIS_LEDS_TOPIC1, ABRIS_LEDS_TOPIC2]:
     event_counter[topic] = 0
     off_timers[topic] = None
-
-def get_env_var(name, default=None):
-    var = os.getenv(name, default)
-    if var is None:
-        sys.exit(f"Error: {name} is not set")
-    return var
 
 def on_connect(client, userdata, flags, rc):
     print(f"Connected with result code {rc}")
