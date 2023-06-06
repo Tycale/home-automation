@@ -90,7 +90,7 @@ def handle_camera_event(client, data, *camera_topics):
             print(f"Turned ON light for topic: {topic}", flush=True)
 
         # Ajoutez l'événement au ensemble d'événements comptabilisés
-        counted_events.add(data["after"]["id"])
+        counted_events.add(data["before"]["id"])
 
     elif data["type"] == "end":
         # Decrease the counter for each topic
