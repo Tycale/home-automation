@@ -29,7 +29,7 @@ PODO_TOPIC2 = "cmnd/esp-terrasse/POWER4"
 
 # Global variables
 common_topics = [HUGO_TOPIC1, HUGO_TOPIC2, PODO_TOPIC1, PODO_TOPIC2]
-score_threshold = 0.76
+score_threshold = 0.75
 counted_events = set()
 event_counter = {}
 off_timers = {}
@@ -72,7 +72,7 @@ def handle_camera_event(client, data, *camera_topics):
 
     topics = list(camera_topics) + common_topics
 
-    if data["type"] in {"new", "update"} and data["after"]["id"] not in counted_events and \
+    if data["type"] in {"new", "update"} and data["before"]["id"] not in counted_events and \
             (float(data["before"]["top_score"]) > score_threshold or float(data["after"]["score"]) > score_threshold):
         # Increase the counter for each topic
         for topic in topics:
